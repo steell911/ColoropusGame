@@ -1,5 +1,10 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>script.js</file>
+        <file>ColorButton.qml</file>
+        <file>thumb_COLOURBOX5280932.png</file>
+        <file>Untitled1.png</file>
+        <file>2fons.ru-17444.png</file>
     </qresource>
 </RCC>
