@@ -5,6 +5,34 @@ import "script.js" as MyScript
 
 
 ApplicationWindow {
+    function paintCanvas() {
+        var ctx = rootCanvas.getContext("2d")
+        ctx.lineWidth = 4
+        ctx.strokeStyle = "blue"
+        ctx.fillStyle = rootCanvas.fillColor
+        ctx.beginPath()
+        ctx.moveTo(rootCanvas.width*0.1,rootCanvas.height*0.1)
+        ctx.lineTo(rootCanvas.width*0.8,rootCanvas.height*0.9)
+        ctx.lineTo(rootCanvas.width*0.1,rootCanvas.height*0.9)
+        ctx.closePath()
+        ctx.fill()
+        ctx.stroke()
+
+    }
+    function paintNewCanvas() {
+        var ctx = rootCanvas.getContext("2d")
+        ctx.lineWidth = 4
+        ctx.strokeStyle = "green"
+        ctx.fillStyle = "steelgreen"
+        ctx.beginPath()
+        ctx.moveTo(rootCanvas.width*0.2, rootCanvas.height*0.1)
+        ctx.lineTo(rootCanvas.width*0.9, rootCanvas.height*0.1)
+        ctx.lineTo(rootCanvas.width*0.9, rootCanvas.height*0.9)
+        ctx.closePath()
+        ctx.fill()
+        ctx.stroke()
+    }
+
     function newColorGenerate() {
         resetButtons()
         var newColor = MyScript.generateColorFromSet(firstColorButton.color,
@@ -14,6 +42,7 @@ ApplicationWindow {
                                                      Qt.rgba)
         if(newColor == colorBox.color) {
             newColorGenerate()
+            
         }
         else {
             colorBox.color = newColor
@@ -141,25 +170,32 @@ ApplicationWindow {
     }
 
     ColumnLayout {
-        anchors.fill: parent
 
+        anchors.fill: parent
         Pane {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            Grid {
-                id: grid
-                spacing: 0
+            Canvas {
+                id: rootCanvas
                 anchors.fill: parent
-                columns: Math.floor(Math.sqrt(repeater.model))
-                Repeater {
-                    id: repeater
-                    model: 10000
-                    Rectangle {
-                        width: grid.width / grid.columns
-                        height: width
-                        color: MyScript.getRandomColor(Qt.rgba)
+                property color fillColor: colorBox.color
+
+                onFillColorChanged: requestPaint()
+
+                onPaint: {
+                    paintCanvas()
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onEntered: {
+                        rootCanvas.scale = 1.1
+                    }
+                    onExited: {
+                        rootCanvas.scale = 1
                     }
                 }
+
             }
         }
 
