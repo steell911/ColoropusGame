@@ -5,11 +5,13 @@ import "script.js" as MyScript
 
 
 ApplicationWindow {
+
+    property int step: 0
     function paintCanvas() {
         var ctx = rootCanvas.getContext("2d")
         ctx.lineWidth = 4
         ctx.strokeStyle = "blue"
-        ctx.fillStyle = rootCanvas.fillColor
+        ctx.fillStyle = canvasModel.get(0).fillColor
         ctx.beginPath()
         ctx.moveTo(rootCanvas.width*0.1,rootCanvas.height*0.1)
         ctx.lineTo(rootCanvas.width*0.8,rootCanvas.height*0.9)
@@ -23,7 +25,7 @@ ApplicationWindow {
         var ctx = rootCanvas.getContext("2d")
         ctx.lineWidth = 4
         ctx.strokeStyle = "green"
-        ctx.fillStyle = "steelgreen"
+        ctx.fillStyle = canvasModel.get(1).fillColor
         ctx.beginPath()
         ctx.moveTo(rootCanvas.width*0.2, rootCanvas.height*0.1)
         ctx.lineTo(rootCanvas.width*0.9, rootCanvas.height*0.1)
@@ -31,6 +33,12 @@ ApplicationWindow {
         ctx.closePath()
         ctx.fill()
         ctx.stroke()
+    }
+    function paintOtherCanvas() {
+
+        var array = []
+        var data = {'fillColor': 'blue', 'coordinates': array};
+        canvasModel.append()
     }
 
     function newColorGenerate() {
@@ -46,6 +54,23 @@ ApplicationWindow {
         }
         else {
             colorBox.color = newColor
+        }
+    }
+
+    function newFigure() {
+        var object = Qt.createQmlObject('import QtQuick 2.7; ListElement{property var x: 10}', canvasModel, "dyn1")
+        canvasModel.append({"fillColor": "blue", "coordinates": object})
+    }
+
+    ListModel {
+        id: canvasModel
+        ListElement {
+            fillColor: "red"
+            coordinates:[ListElement{x: 10; y: 10},ListElement{x: 10; y:80},ListElement{x: 80;y:80}]
+        }
+        ListElement {
+            fillColor: "green"
+            coordinates: [ListElement{x: 10; y: 20},ListElement{x: 80; y: 90}, ListElement{x: 10; y: 90}]
         }
     }
 
@@ -183,19 +208,32 @@ ApplicationWindow {
                 onFillColorChanged: requestPaint()
 
                 onPaint: {
-                    paintCanvas()
+                    switch(step) {
+                    case 0: paintCanvas()
+                        break;
+                    case 1: paintNewCanvas()
+                        break;
+                    }
+                    ++step
                 }
                 MouseArea {
                     anchors.fill: parent
                     hoverEnabled: true
                     onEntered: {
                         rootCanvas.scale = 1.1
+                        rootCanvas.requestPaint()
                     }
                     onExited: {
                         rootCanvas.scale = 1
                     }
                 }
 
+            }
+        }
+        Button {
+            text: qsTr("New figure")
+            onClicked: {
+                newFigure()
             }
         }
 
